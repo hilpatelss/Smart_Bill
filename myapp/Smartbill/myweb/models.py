@@ -1,24 +1,18 @@
 from django.db import models
-
+from django.contrib.auth.models import  User
 # Create your models here.
-
-class User(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone_number = models.ImageField(max_length=10)
-    def __str__(self):
-        return self.email
 
 class Business(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    bizType = models.CharField()
-    Gstin = models.CharField()
-    City = models.CharField()
-    full_address = models.TextField()
-    Pan_number =models.CharField()
-    shop_logo = models.ImageField()
-    Gst_enable = models.BinaryField(default=True)
+    phone_number =models.IntegerField(max_length=10)
+    bizName = models.CharField(max_length=255)
+    bizType = models.CharField(max_length=255)
+    Gstin = models.CharField(default="")
+    City = models.CharField(max_length=255)
+    full_address = models.TextField(default="")
+    Pan_number =models.CharField(default="",max_length=15)
+    shop_logo = models.ImageField(default="")
+    Gst_enable = models.CharField(max_length=5,default="True")
     default_gst = models.IntegerField(default=0)
 
 class Formet(models.Model):
@@ -32,7 +26,7 @@ class Formet(models.Model):
 class Customer(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     Customer_name = models.CharField(max_length=255)
-    Customer_mobile = models.IntegerField(max_length=10)
+    Customer_mobile = models.IntegerField()
     Customer_email = models.EmailField()
     customer_bill_count = models.IntegerField(default=0)
     customer_bill_spent = models.IntegerField(default=0)

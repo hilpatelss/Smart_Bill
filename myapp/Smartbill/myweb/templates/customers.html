@@ -233,10 +233,6 @@
             <label class="form-label">Email Address</label>
             <input type="email" class="form-control" id="newCustEmail" placeholder="optional"/>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Address <span class="text-muted">(optional)</span></label>
-            <textarea class="form-control" rows="2" placeholder="Street, City…"></textarea>
-          </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -264,7 +260,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Phone</label>
-          <input type="tel" class="form-control" id="editCustPhone"/>
+          <input type="tel" class="form-control" id="editCustPhone"/ disabled readonly>
         </div>
         <div class="mb-3">
           <label class="form-label">Email</label>
@@ -322,74 +318,14 @@
     document.getElementById('editCustEmail').value = email;
   }
 
-  // ── Delete row ──
-  function deleteRow(btn) {
-    if (confirm('Remove this customer?')) btn.closest('tr').remove();
-  }
+
 
   // ── Save new customer ──
-  function saveCustomer() {
-    const name  = document.getElementById('newCustName').value.trim();
-    const phone = document.getElementById('newCustPhone').value.trim();
-    const email = document.getElementById('newCustEmail').value.trim();
-    if (!name || !phone) { alert('Name and phone are required.'); return; }
-
-    const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-    const colors   = ['#2563eb','#d97706','#16a34a','#9333ea','#dc2626'];
-    const color    = colors[Math.floor(Math.random() * colors.length)];
-    const tbody    = document.getElementById('custTableBody');
-    const rowNum   = tbody.rows.length + 1;
-
-    tbody.insertAdjacentHTML('beforeend', `
-      <tr>
-        <td>${rowNum}</td>
-        <td><div class="d-flex align-items-center gap-2">
-          <div class="avatar-sm" style="background:${color}">${initials}</div>
-          <strong>${name}</strong>
-        </div></td>
-        <td>${phone}</td><td>${email || '—'}</td>
-        <td>0</td><td><strong>₹ 0</strong></td>
-        <td>
-          <button class="btn btn-sm btn-outline-info py-0 me-1"
-                  onclick="viewHistory('${name}')"
-                  data-bs-toggle="modal" data-bs-target="#historyModal">
-            <i class="bi bi-clock-history"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-primary py-0 me-1"
-                  data-bs-toggle="modal" data-bs-target="#editCustModal"
-                  onclick="fillEdit('${name}','${phone}','${email}')">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-            <i class="bi bi-trash3"></i>
-          </button>
-        </td>
-      </tr>`);
-
-    bootstrap.Modal.getInstance(document.getElementById('addCustomerModal')).hide();
-    document.getElementById('addCustForm').reset();
-  }
+  
 
   // ── View purchase history modal ──
   // In production: fetch from /api/customer/<id>/history/
-  const sampleHistory = {
-    'Rahul Sharma': [
-      { inv:'#INV-0041', date:'Today, 02:30 PM', amount:'₹ 1,240', status:'Paid' },
-      { inv:'#INV-0035', date:'18 Jul 2025',     amount:'₹ 3,100', status:'Paid' },
-      { inv:'#INV-0029', date:'10 Jul 2025',     amount:'₹ 890',   status:'Paid' },
-    ],
-    'Priya Mehta': [
-      { inv:'#INV-0040', date:'Today, 11:15 AM', amount:'₹ 580',   status:'Paid' },
-      { inv:'#INV-0033', date:'15 Jul 2025',     amount:'₹ 1,450', status:'Pending' },
-    ],
-    'Amit Patel': [
-      { inv:'#INV-0039', date:'Yesterday',       amount:'₹ 3,050', status:'Pending' },
-      { inv:'#INV-0028', date:'09 Jul 2025',     amount:'₹ 2,200', status:'Paid' },
-    ],
-    'Sneha Joshi': [
-      { inv:'#INV-0038', date:'Yesterday',       amount:'₹ 890',   status:'Paid' },
-    ],
-  };
+
 
   function viewHistory(name) {
     document.getElementById('historyCustomerName').textContent = name;
