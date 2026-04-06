@@ -11,6 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'customers.css' %}">
+  <script src="https://code.jquery.com/jquery-4.0.0.js" integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -115,13 +117,18 @@
               <td>14</td>
               <td><strong>₹ 18,400</strong></td>
               <td>
-                <button class="btn btn-sm btn-outline-primary py-0 me-1" data-bs-toggle="modal"
-                  data-bs-target="#editCustModal" onclick="fillEdit('Rahul Sharma','9876543210','rahul@email.com')">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
+                <form id="deletecustomer">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-primary py-0 me-1" data-bs-toggle="modal"
+                    data-bs-target="#editCustModal" onclick="fillEdit('Rahul Sharma','9876543210','rahul@email.com')">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button type="submit" id="deletecustomer_Customer_mobile" name="" value="9876543210"
+                    class="btn btn-sm btn-outline-danger py-0">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </form>
+
               </td>
             </tr>
           </tbody>
@@ -130,9 +137,27 @@
     </div>
 
   </main>
+  <script type="text/javascript">
+    // deleteing customer
+    $(document).on("submit", "#deletecustomer", function (e) {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '/deletecustomer/',
+        data: {
+          Customer_mobile: $('#deletecustomer_Customer_mobile').val(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+          
+          // Handle success response
+        }
+      })
+    })
+  </script>
 
   <!-- ADD CUSTOMER MODAL -->
-  <form action="{% url 'addcustomer' %}" method="post">
+  <form id="addcustomer">
     {% csrf_token %}
     <div class="modal fade" id="addCustomerModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
@@ -145,33 +170,50 @@
             <form id="addCustForm">
               <div class="mb-3">
                 <label class="form-label">Full Name *</label>
-                <input type="text" name="Customer_name" class="form-control" id="newCustName"
-                  placeholder="e.g. Vikram Singh" required />
+                <input type="text" id="addcustomer_Customer_name" name="Customer_name" class="form-control"
+                  id="newCustName" placeholder="e.g. Vikram Singh" required />
               </div>
               <div class="mb-3">
                 <label class="form-label">Phone Number *</label>
-                <input type="tel" name="Customer_mobile" class="form-control" id="newCustPhone"
-                  placeholder="10-digit mobile" />
+                <input type="tel" id="addcustomer_Customer_mobile" name="Customer_mobile" class="form-control"
+                  id="newCustPhone" placeholder="10-digit mobile" />
               </div>
               <div class="mb-3">
                 <label class="form-label">Email Address</label>
-                <input type="email" name="Customer_email" class="form-control" id="newCustEmail"
-                  placeholder="optional" />
+                <input type="email" id="addcustomer_Customer_email" name="Customer_email" class="form-control"
+                  id="newCustEmail" placeholder="optional" />
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary" onclick="saveCustomer()">
-              <i class="bi bi-check-lg me-1"></i> Save Customer
-            </button>
+            <input class="btn btn-primary" type="submit">
           </div>
         </div>
       </div>
     </div>
   </form>
+  <script type="text/javascript">
+    // adding customer
+    $(document).on("submit", "#addcustomer", function (e) {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '/addcustomer/',
+        data: {
+          Customer_name: $('#addcustomer_Customer_name').val(),
+          Customer_mobile: $('#addcustomer_Customer_mobile').val(),
+          Customer_email: $('#addcustomer_Customer_email').val(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+          bootstrap.Modal.getInstance(document.getElementById('addCustomerModal')).hide();
+        }
+      })
+    })
+  </script>
   <!-- EDIT CUSTOMER MODAL -->
-  <form action="{% url 'editcustomer' %}" method="post">
+  <form id="editcustomer">
     {% csrf_token %}
     <div class="modal fade" id="editCustModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
@@ -183,27 +225,48 @@
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input type="text" name="Customer_name" class="form-control" id="editCustName" />
+              <input type="text" id="editcustomer_Customer_name" name="Customer_name" class="form-control"
+                id="editCustName" />
             </div>
             <div class="mb-3">
               <label class="form-label">Phone</label>
-              <input type="tel" name="Customer_mobile" class="form-control" id="editCustPhone" disabled readonly>
+              <input type="tel" id="editcustomer_Customer_mobile" name="Customer_mobile" class="form-control"
+                id="editCustPhone" disabled readonly>
             </div>
             <div class="mb-3">
               <label class="form-label">Email</label>
-              <input type="email" name="Customer_email" class="form-control" id="editCustEmail" />
+              <input type="email" id="editcustomer_Customer_email" name="Customer_email" class="form-control"
+                id="editCustEmail" />
             </div>
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-warning text-white" data-bs-dismiss="modal">
-              <i class="bi bi-check-lg me-1"></i> Update
-            </button>
+            <input type="submit" class="btn btn-warning text-white">
           </div>
         </div>
       </div>
     </div>
   </form>
+  <script type="text/javascript">
+    // editing customer
+    $(document).on("submit", "#editcustomer", function (e) {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '/editcustomer/',
+        data: {
+          Customer_name: $('#editcustomer_Customer_name').val(),
+          Customer_mobile: $('#editcustomer_Customer_mobile').val(),
+          Customer_email: $('#editcustomer_Customer_email').val(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+           bootstrap.Modal.getInstance(document.getElementById('editCustModal')).hide();
+          // Handle success response
+        }
+      })
+    })
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -217,9 +280,9 @@
 
     // ── Fill edit modal ──
     function fillEdit(name, phone, email) {
-      document.getElementById('editCustName').value = name;
-      document.getElementById('editCustPhone').value = phone;
-      document.getElementById('editCustEmail').value = email;
+      document.getElementById('editcustomer_Customer_name').value = name;
+      document.getElementById('editcustomer_Customer_mobile').value = phone;
+      document.getElementById('editcustomer_Customer_email').value = email;
     }
 
   </script>

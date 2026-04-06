@@ -4,14 +4,13 @@ from django.contrib.auth.models import  User
 
 class Business(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    phone_number =models.IntegerField(max_length=10)
+    phone_number =models.IntegerField(default=9265186613)
     bizName = models.CharField(max_length=255)
     bizType = models.CharField(max_length=255)
     Gstin = models.CharField(default="")
     City = models.CharField(max_length=255)
     full_address = models.TextField(default="")
     Pan_number =models.CharField(default="",max_length=15)
-    shop_logo = models.ImageField(default="")
     Gst_enable = models.BooleanField(default=True)
     default_gst = models.IntegerField(default=0)
 
@@ -26,13 +25,13 @@ class Formet(models.Model):
 class Customer(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     Customer_name = models.CharField(max_length=255)
-    Customer_mobile = models.IntegerField(max_length=10)
+    Customer_mobile = models.IntegerField(default=9265186613)
     Customer_email = models.EmailField(default="customer@smartbill.com")
     customer_bill_count = models.IntegerField(default=0)
     customer_bill_spent = models.IntegerField(default=0)
     def __str__(self):
         return self.Customer_mobile
-
+    
 class Products(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     Product_name = models.CharField()

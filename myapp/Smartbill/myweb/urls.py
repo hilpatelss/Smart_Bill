@@ -16,8 +16,13 @@ urlpatterns = [
     path('Signout/' , views.Signout , name="Signout"),
     path('customers/', views.customers, name='customers'),
     path('editbiz/', views.editbiz, name='editbiz'),
+    path('settings/editbiz/', views.editbiz, name='editbiz'),
     path('editinv/', views.editinv, name='editinv'),
     path('edituser/', views.edituser, name='edituser'),
     path('editcustomer/', views.editcustomer, name='editcustomer'),
     path('addcustomer/', views.addcustomer, name='addcustomer'),
+    path('deletecustomer/', views.deletecustomer, name='deletecustomer'),
+    path('editproducts/', views.editproducts, name='editproducts'),
+    path('addproducts/', views.addproducts, name='addproducts'),
+    path('deleteproducts/', views.deleteproducts, name='deleteproducts'),
 ]

@@ -96,9 +96,18 @@
             <div class="step-label">Shop Details</div>
           </div>
         </div>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+
+          {{ message }}
+        </div>
+
+        {% endfor %}
+        {% endif %}
 
         <!-- ── STEP 1: Personal info ── -->
-        <form id="form-step1" method="post" >
+        <form id="form-step1" method="post">
           {% csrf_token %}
           <div id="step1">
 
@@ -123,15 +132,16 @@
 
             <div class="mb-3">
               <label class="form-label">Phone Number *</label>
-              <input type="tel" class="form-control" id="phone" name="phone_number" placeholder="10-digit mobile number" required />
+              <input type="tel" class="form-control" id="phone" name="phone_number" placeholder="10-digit mobile number"
+                required />
               <div class="invalid-feedback">Enter a valid phone number</div>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Password *</label>
               <div class="pw-wrap">
-                <input type="password" class="form-control" name="password" id="password" placeholder="Create a strong password"
-                  oninput="checkStrength()" required />
+                <input type="password" class="form-control" name="password" id="password"
+                  placeholder="Create a strong password" oninput="checkStrength()" required />
                 <button type="button" class="pw-toggle" onclick="togglePw('password','eye1')">
                   <i class="bi bi-eye" id="eye1"></i>
                 </button>
@@ -173,7 +183,8 @@
 
             <div class="mb-3">
               <label class="form-label">Shop / Business Name *</label>
-              <input type="text" class="form-control" name="bizName" id="shopName" placeholder="e.g. Sharma Electronics" required />
+              <input type="text" class="form-control" name="bizName" id="shopName" placeholder="e.g. Sharma Electronics"
+                required />
               <div class="form-text small text-muted">This appears on all your invoices.</div>
             </div>
 
@@ -313,7 +324,7 @@
 
     }
 
-    
+
   </script>
 </body>
 

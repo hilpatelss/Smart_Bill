@@ -11,6 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'settings.css' %}">
+  <script src="https://code.jquery.com/jquery-4.0.0.js" integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -74,7 +76,7 @@
 
         <!-- ── TAB: Shop Details ── -->
         <div id="tab-shop">
-          <form method="post" action="{% url 'editbiz' %}">
+          <form id="editbiz">
             {% csrf_token %}
             <div class="panel">
               <div class="panel-header"><i class="bi bi-shop text-primary"></i> Shop Details</div>
@@ -82,208 +84,201 @@
                 <div class="row g-3">
                   <div class="col-12">
                     <label class="form-label">Shop / Business Name *</label>
-                    <input type="text" class="form-control" name="bizName" id="shopName" value="BillMate Store" />
+                    <input type="text" class="form-control" name="bizName" id="editbiz_bizName"
+                      value="BillMate Store" />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Owner Name</label>
-                    <input type="text" class="form-control" name="full_name" value="hil Patel" />
+                    <input type="text" class="form-control" id="editbiz_full_name" name="full_name" value="hil Patel" />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" class="form-control" name="phone_number" value="+91 92651 86613" />
+                    <input type="tel" class="form-control" id="editbiz_phone_number" name="phone_number"
+                      value="+91 92651 86613" />
                   </div>
-                
+
                   <div class="col-12">
                     <label class="form-label">Full Address</label>
-                    <textarea class="form-control" name="full_address" rows="2">12, Market Road, Pune – 411001</textarea>
+                    <textarea class="form-control" id="editbiz_full_address" name="full_address"
+                      rows="2">25, Sector 26, Gnadhinagar – 382028</textarea>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">GSTIN</label>
-                    <input type="text" class="form-control" name="Gstin" value="27AABCU9603R1ZM"
+                    <input type="text" class="form-control" id="editbiz_Gstin" name="Gstin" value="27AABCU9603R1ZM"
                       placeholder="GST Identification Number" />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">PAN Number</label>
-                    <input type="text" class="form-control" name="Pan_number" placeholder="optional" />
+                    <input type="text" class="form-control" id="editbiz_Pan_number" name="Pan_number"
+                      placeholder="optional" />
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Logo upload -->
-            <div class="panel">
-              <div class="panel-header"><i class="bi bi-image text-success"></i> Shop Logo</div>
-              <div class="panel-body">
-                <div class="row align-items-center g-3">
-                  <div class="col-auto">
-                    <!-- Default logo placeholder -->
-                    <div class="logo-preview d-flex align-items-center justify-content-center"
-                    style="background:#eff6ff;color:#2563eb;font-size:2rem;width:80px;height:80px;border-radius:8px">
-                    <i class="bi bi-receipt-cutoff"></i>
-                  </div>
-                </div>
-                <div class="col">
-                  <!-- Click area to pick a file -->
-                  <div class="logo-upload-area" onclick="document.getElementById('logoInput').click()">
-                    <i class="bi bi-cloud-upload d-block"></i>
-                    <div class="fw-semibold small">Click to upload logo</div>
-                    <div class="text-muted" style="font-size:.75rem">PNG, JPG — max 2MB. Recommended: 200×200px</div>
-                  </div>
-                  <!-- Hidden file input — triggered by div click above -->
-                  <input type="file" id="logoInput" accept="image/*" name="shop_logo" class="d-none" onchange="previewLogo(event)" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-
-          <button class="btn btn-primary" onclick="saveSettings()">
-            <i class="bi bi-check-lg me-1"></i> Save Shop Settings
-          </button>
+            <input class="btn btn-primary" type="submit" value="Save Shop Settings">
+          </form>
         </div><!-- /tab-shop -->
+        <script type="text/javascript">
+          // editing shop detail
+          $(document).on("submit", "#editbiz", function (e) {
+            e.preventDefault();
+            $.ajax({
+              type: 'POST',
+              url: '/editbiz/',
+              data: {
+                bizName: $('#editbiz_bizName').val(),
+                full_name: $('#editbiz_full_name').val(),
+                phone_number: $('#editbiz_phone_number').val(),
+                full_address: $('#editbiz_full_address').val(),
+                Gstin: $('#editbiz_Gstin').val(),
+                Pan_number: $('#editbiz_Pan_number').val(),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+              },
+              success: function (data) {
+                
+                // Handle success response
+              }
+            })
+          })
+        </script>
 
 
         <!-- ── TAB: Invoice Format ── -->
         <div id="tab-invoice" class="d-none">
-          <form action="{% url 'editinv' %}" method="post">
+          <form id="editinv">
             {% csrf_token %}
-          <div class="panel">
-            <div class="panel-header"><i class="bi bi-receipt text-primary"></i> Invoice Format</div>
-            <div class="panel-body">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label">Invoice Number Prefix</label>
-                  <input type="text" class="form-control" name="Inv_prefix" value="INV-" id="invPrefix" oninput="updatePreview()" />
-                </div>
-            
-                <div class="col-12">
-                  <label class="form-label">Invoice Footer Text</label>
-                  <textarea class="form-control" rows="2" name="Inv_footer" id="invFooter"
-                    oninput="updatePreview()">Thank you for your purchase! For queries, contact us at shop@billmate.in</textarea>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Invoice Due Days</label>
-                  <select class="form-select" name="Inv_due_days">
-                    <option>On Receipt</option>
-                    <option>7 days</option>
-                    <option selected>15 days</option>
-                    <option>30 days</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <div class="mt-4">
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" name="Show_signature_area" type="checkbox" id="showSignature" checked />
-                      <label class="form-check-label small" for="showSignature">Show signature area</label>
-                    </div>
-                    <div class="form-check form-switch mt-2">
-                      <input class="form-check-input" name="Show_TC" type="checkbox" id="showTerms" checked />
-                      <label class="form-check-label small" for="showTerms">Show terms &amp; conditions</label>
+            <div class="panel">
+              <div class="panel-header"><i class="bi bi-receipt text-primary"></i> Invoice Format</div>
+              <div class="panel-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Invoice Number Prefix</label>
+                    <input type="text" class="form-control" id="invPrefix" name="Inv_prefix" value="INV-"
+                      oninput="updatePreview()" />
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Invoice Footer Text</label>
+                    <textarea class="form-control" rows="2" id="invFooter" name="Inv_footer"
+                      oninput="updatePreview()">Thank you for your purchase! For queries, contact us at shop@billmate.in</textarea>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Invoice Due Days</label>
+                    <select class="form-select" id="Inv_due_days" name="Inv_due_days">
+                      <option>On Receipt</option>
+                      <option>7 days</option>
+                      <option selected>15 days</option>
+                      <option>30 days</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mt-4">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" id="Show_signature_area" name="Show_signature_area"
+                          type="checkbox" id="showSignature" checked />
+                        <label class="form-check-label small" for="showSignature">Show signature area</label>
+                      </div>
+                      <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" id="Show_TC" name="Show_TC" type="checkbox" id="showTerms"
+                          checked />
+                        <label class="form-check-label small" for="showTerms">Show terms &amp; conditions</label>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <input class="btn btn-primary" type="submit" value="Save Invoice Settings">
+
           </form>
-
-          <!-- Live preview of invoice number -->
-          <div class="panel">
-            <div class="panel-header"><i class="bi bi-eye text-secondary"></i> Preview</div>
-            <div class="panel-body">
-              <div class="inv-preview">
-                <div class="inv-preview-head" id="previewShopName">BillMate Store</div>
-                <div class="inv-preview-body">
-                  <div class="inv-preview-row">
-                    <span>Invoice #</span>
-                    <strong id="previewInvNum">#INV-0001</strong>
-                  </div>
-                  <div class="inv-preview-row">
-                    <span>Item × 2</span><span>₹ 640.00</span>
-                  </div>
-                  <div class="inv-preview-row">
-                    <span>GST 18%</span><span>₹ 115.20</span>
-                  </div>
-                  <div class="inv-preview-row">
-                    <span>Total</span><span>₹ 755.20</span>
-                  </div>
-                </div>
-              </div>
-              <p class="small text-muted mt-2 mb-0" id="previewFooter">
-                Thank you for your purchase!
-              </p>
-            </div>
-          </div>
-          <button class="btn btn-primary" onclick="saveSettings()">
-            <i class="bi bi-check-lg me-1"></i> Save Invoice Settings
-          </button>
         </div><!-- /tab-invoice -->
-
+        <script type="text/javascript">
+          // editing invoice detail
+          $(document).on("submit", "#editinv", function (e) {
+            e.preventDefault();
+            $.ajax({
+              type: 'POST',
+              url: '/editinv/',
+              data: {
+                Inv_prefix: $('#invPrefix').val(),
+                Inv_footer: $('#invFooter').val(),
+                Inv_due_days: $('#Inv_due_days').val(),
+                Show_signature_area: $('#Show_signature_area').is(':checked'),
+                Show_TC: $('#Show_TC').is(':checked'),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+              },
+              success: function (data) {
+                // Handle success response
+              }
+            })
+          })
+        </script>
 
 
         <!-- ── TAB: Account ── -->
         <div id="tab-account" class="d-none">
-          <form action="{% url 'edituser' %}" method="post">
+          <form id="edituser">
             {% csrf_token %}
-          <div class="panel">
-            <div class="panel-header"><i class="bi bi-person-gear text-primary"></i> Account Settings</div>
-            <div class="panel-body">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label">Username</label>
-                  <input type="text" class="form-control" name="username" value="admin" />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Display Name</label>
-                  <input type="text" class="form-control" name="full_name" value="Hil Patel" />
-                </div>
-                <div class="col-12">
-                  <hr />
-                </div>
-                <div class="col-12">
-                  <h6 class="fw-bold">Change Password</h6>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Current Password</label>
-                  <input type="password" name="pass1" class="form-control" placeholder="••••••••" />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">New Password</label>
-                  <input type="password" name="pass2" class="form-control" placeholder="••••••••" />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Confirm Password</label>
-                  <input type="password" name="pass3" class="form-control" placeholder="••••••••" />
-                </div>
-              </div>
-            </div>
-          </div>
-          </form>
-
-          <!-- Danger zone -->
-          <div class="panel border-danger">
-            <div class="panel-header" style="color:#dc2626;background:#fff5f5;border-color:#fecaca">
-              <i class="bi bi-exclamation-triangle-fill text-danger"></i> Danger Zone
-            </div>
-            <div class="panel-body">
-              <div class="d-flex align-items-center justify-content-between">
-                <div>
-                  <div class="fw-semibold">Clear All Data</div>
-                  <div class="small text-muted">This will delete all bills, customers, and products. Cannot be undone.
+            <div class="panel">
+              <div class="panel-header"><i class="bi bi-person-gear text-primary"></i> Account Settings</div>
+              <div class="panel-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="edituser_username" name="username" value="admin" />
                   </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" class="form-control" id="edituser_full_name" name="full_name"
+                      value="Hil Patel" />
+                  </div>
+                  <div class="col-12">
+                    <hr />
+                  </div>
+                  <div class="col-12">
+                    <h6 class="fw-bold">Change Password</h6>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" id="edituser_pass1" name="pass1" class="form-control"
+                      placeholder="••••••••" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">New Password</label>
+                    <input type="password" id="edituser_pass2" name="pass2" oninput="checkStrength()"
+                      class="form-control" placeholder="••••••••" />
+                  </div>
+
                 </div>
-                <button class="btn btn-outline-danger btn-sm"
-                  onclick="if(confirm('Are you sure? This cannot be undone.')) alert('Demo only — no data deleted.')">
-                  Clear Data
-                </button>
               </div>
             </div>
-          </div>
 
-          <button class="btn btn-primary" onclick="saveSettings()">
-            <i class="bi bi-check-lg me-1"></i> Save Account Settings
-          </button>
+
+            <input type="submit" class="btn btn-primary" value="Save Account Settings">
+
+          </form>
         </div><!-- /tab-account -->
-
+        <script type="text/javascript">
+          // editing invoice user
+          $(document).on("submit", "#edituser", function (e) {
+            e.preventDefault();
+            $.ajax({
+              type: 'POST',
+              url: '/edituser/',
+              data: {
+                username: $('#edituser_username').val(),
+                full_name: $('#edituser_full_name').val(),
+                pass1: $('#edituser_pass1').val(),
+                pass2: $('#edituser_pass2').val(),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+              },
+              success: function (data) {
+                // Handle success response
+              }
+            })
+          })
+        </script>
       </div><!-- /col right -->
     </div><!-- /row -->
 
@@ -297,6 +292,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+
+
+
+
     // ── Tab switching ──
     // Hides all tab panels, then shows the clicked one.
     const allTabs = ['shop', 'invoice', 'account'];
@@ -307,8 +306,38 @@
       linkEl.classList.add('active');
       return false; // prevent # scroll
     }
+    // ── Password strength checker ──
+    function checkStrength() {
+      const pw = document.getElementById('password').value;
+      const fill = document.getElementById('strength-fill');
+      const text = document.getElementById('strength-text');
 
-    // ── Logo preview ──
+      let score = 0;
+      if (pw.length >= 8) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+      const levels = [
+        { label: 'Very weak', color: '#ef4444', w: '20%' },
+        { label: 'Weak', color: '#f97316', w: '40%' },
+        { label: 'Fair', color: '#eab308', w: '60%' },
+        { label: 'Strong', color: '#22c55e', w: '80%' },
+        { label: 'Very strong', color: '#16a34a', w: '100%' },
+      ];
+
+      if (pw.length === 0) {
+        fill.style.width = '0'; text.textContent = 'Enter a password'; text.style.color = '#94a3b8';
+        return;
+      }
+      const lvl = levels[score] || levels[0];
+      fill.style.width = lvl.w;
+      fill.style.background = lvl.color;
+      text.textContent = lvl.label;
+      text.style.color = lvl.color;
+    }
+
+
     // When user picks an image file, show a thumbnail.
     function previewLogo(event) {
       const file = event.target.files[0];
@@ -317,24 +346,11 @@
       reader.onload = function (e) {
         // Find the logo placeholder and replace with the image
         const preview = document.querySelector('.logo-preview');
-        preview.innerHTML = `<img src="${e.target.result}" class="logo-preview" alt="Logo"/>`;
+        preview.innerHTML = `<img src="${e.target.result}" class="logo-preview" alt="Logo" />`;
       };
       reader.readAsDataURL(file);
     }
 
-    // ── Invoice preview update ──
-    function updatePreview() {
-      const prefix = document.getElementById('invPrefix').value || 'INV-';
-      const start = document.getElementById('invStart').value || '1';
-      const footer = document.getElementById('invFooter').value;
-      const padded = String(start).padStart(4, '0');
-      document.getElementById('previewInvNum').textContent = '#' + prefix + padded;
-      document.getElementById('previewFooter').textContent = footer;
-    }
-
-    // ── Currency symbol preview ──
-
-    // ── Save settings (shows toast) ──
     function saveSettings() {
       // In production: POST form data to Django view.
       // For demo: just show a confirmation toast.

@@ -52,7 +52,6 @@
         <i class="bi bi-plus-lg me-1"></i> Add Product
       </button>
     </div>
-
     <!-- Stats strip -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
@@ -81,6 +80,7 @@
       </div>
     </div>
 
+
     <!-- Product List Panel -->
     <div class="panel">
       <div class="panel-header justify-content-between">
@@ -107,11 +107,9 @@
             <tr>
               <th>#</th>
               <th>Product Name</th>
-              <th>Category</th>
               <th>Unit Price</th>
               <th>GST %</th>
               <th>Stock</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -123,11 +121,9 @@
             <tr data-status="in-stock">
               <td>1</td>
               <td><strong>Rice (5kg)</strong></td>
-              <td>Groceries</td>
               <td>₹ 320</td>
               <td>5%</td>
               <td>240</td>
-              <td><span class="badge-in">In Stock</span></td>
               <td>
                 <button class="btn btn-sm btn-outline-primary py-0 me-1"
                   onclick="editProduct('Rice (5kg)', 320, 5, 240)" data-bs-toggle="modal"
@@ -139,99 +135,7 @@
                 </button>
               </td>
             </tr>
-            <tr data-status="in-stock">
-              <td>2</td>
-              <td><strong>Sunflower Oil (1L)</strong></td>
-              <td>Groceries</td>
-              <td>₹ 145</td>
-              <td>5%</td>
-              <td>80</td>
-              <td><span class="badge-in">In Stock</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary py-0 me-1"
-                  onclick="editProduct('Sunflower Oil (1L)', 145, 5, 80)" data-bs-toggle="modal"
-                  data-bs-target="#editProductModal">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
-            <tr data-status="low-stock">
-              <td>3</td>
-              <td><strong>Notebook (Pack of 5)</strong></td>
-              <td>Stationery</td>
-              <td>₹ 120</td>
-              <td>12%</td>
-              <td>800</td>
-              <td><span class="badge-low">Low Stock</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary py-0 me-1"
-                  onclick="editProduct('Notebook (Pack of 5)', 120, 12, 8)" data-bs-toggle="modal"
-                  data-bs-target="#editProductModal">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
-            <tr data-status="low-stock">
-              <td>4</td>
-              <td><strong>Pen Set</strong></td>
-              <td>Stationery</td>
-              <td>₹ 60</td>
-              <td>12%</td>
-              <td>5</td>
-              <td><span class="badge-low">Low Stock</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary py-0 me-1" onclick="editProduct('Pen Set', 60, 12, 5)"
-                  data-bs-toggle="modal" data-bs-target="#editProductModal">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
-            <tr data-status="out-stock">
-              <td>5</td>
-              <td><strong>Laptop Stand</strong></td>
-              <td>Electronics</td>
-              <td>₹ 850</td>
-              <td>18%</td>
-              <td>0</td>
-              <td><span class="badge-out">Out of Stock</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary py-0 me-1"
-                  onclick="editProduct('Laptop Stand', 850, 18, 0)" data-bs-toggle="modal"
-                  data-bs-target="#editProductModal">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
-            <tr data-status="in-stock">
-              <td>6</td>
-              <td><strong>USB Hub</strong></td>
-              <td>Electronics</td>
-              <td>₹ 590</td>
-              <td>18%</td>
-              <td>34</td>
-              <td><span class="badge-in">In Stock</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary py-0 me-1" onclick="editProduct('USB Hub', 590, 18, 34)"
-                  data-bs-toggle="modal" data-bs-target="#editProductModal">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
+
           </tbody>
         </table>
       </div>
@@ -242,104 +146,105 @@
 
   <!-- ════════════════════════════════
      ADD PRODUCT MODAL
-════════════════════════════════ -->
-  <div class="modal fade" id="addProductModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2 text-primary"></i>Add New Product</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+     ════════════════════════════════ -->
+  <form id="addproducts" method="post" action="{% url 'addproducts' %}">
+    {% csrf_token %}
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold"><i class="bi bi-box-seam me-2 text-primary"></i>Add New Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addProductForm">
+              <div class="mb-3">
+                <label class="form-label">Product Name *</label>
+                <input type="text" id="addProduct_Name" name="Name" class="form-control" id="newProductName"
+                  placeholder="e.g. Laptop" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Unit Price (₹)</label>
+                <input type="number" id="addProduct_Price" name="Price" class="form-control" id="newProductPrice"
+                  placeholder="e.g. 5000" required />
+              </div>
+              <div class="mb-3">
+
+                <label class="form-label">GST %</label>
+                <select class="form-select" name="gst" id="newGst">
+                  <option value="0">0%</option>
+                  <option value="5">5%</option>
+                  <option value="12">12%</option>
+                  <option value="18" >18%</option>
+                  <option value="28">28%</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Stock Quantity</label>
+                <input type="number" id="addProduct_Stock" name="Stock" class="form-control" id="newProductStock"
+                  placeholder="e.g. 10" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <input class="btn btn-primary" type="submit">
+          </div>
         </div>
-        <div class="modal-body">
-         
-          <form id="addProductForm">
+      </div>
+    </div>
+  </form>
+
+  <!-- ════════════════════════════════
+     EDIT PRODUCT MODAL
+     ════════════════════════════════ -->
+  <form id="editproducts " method="post" action="{% url 'editproducts' %}">
+    {% csrf_token %}
+    <div class="modal fade" id="editProductModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2 text-warning"></i>Edit Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">Product Name *</label>
-              <input type="text" class="form-control" id="newName" placeholder="e.g. Sugar (1kg)" required />
+              <label class="form-label">Product Name</label>
+              <input type="text" name="Name" class="form-control" id="editName" />
             </div>
             <div class="row g-2">
               <div class="col-6">
-                <label class="form-label">Category</label>
-                <select class="form-select" id="newCategory">
-                  <option>Groceries</option>
-                  <option>Stationery</option>
-                  <option>Electronics</option>
-                  <option>Clothing</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div class="col-6">
-                <label class="form-label">Unit Price (₹) *</label>
-                <input type="number" class="form-control" id="newPrice" placeholder="0.00" min="0" />
+                <label class="form-label">Unit Price (₹)</label>
+                <input type="number" name="Price" class="form-control" id="editPrice" />
               </div>
               <div class="col-6">
                 <label class="form-label">GST %</label>
-                <select class="form-select" id="newGst">
+                <select name="gst"  class="form-select" id="editGst">
                   <option value="0">0%</option>
                   <option value="5">5%</option>
                   <option value="12">12%</option>
                   <option value="18" selected>18%</option>
                   <option value="28">28%</option>
                 </select>
-              </div>
-              <div class="col-6">
-                <label class="form-label">Stock Quantity</label>
-                <input type="number" class="form-control" id="newStock" placeholder="0" min="0" />
-              </div>
-            </div>  
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary" onclick="saveNewProduct()">
-            <i class="bi bi-check-lg me-1"></i> Save Product
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- ════════════════════════════════
-     EDIT PRODUCT MODAL
-════════════════════════════════ -->
-  <div class="modal fade" id="editProductModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2 text-warning"></i>Edit Product</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label class="form-label">Product Name</label>
-              <input type="text" class="form-control" id="editName" />
-            </div>
-            <div class="row g-2">
-              <div class="col-6">
-                <label class="form-label">Unit Price (₹)</label>
-                <input type="number" class="form-control" id="editPrice" />
-              </div>
-              <div class="col-6">
-                <label class="form-label">GST %</label>
-                <input type="number" class="form-control" id="editGst" />
               </div>
               <div class="col-12">
                 <label class="form-label">Stock Quantity</label>
-                <input type="number" class="form-control" id="editStock" />
+                <input type="number" name="Stock" class="form-control" id="editStock" />
               </div>
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-warning text-white" data-bs-dismiss="modal">
-            <i class="bi bi-check-lg me-1"></i> Update Product
-          </button>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-warning text-white" data-bs-dismiss="modal">
+              <i class="bi bi-check-lg me-1"></i> Update Product
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </form>
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -351,12 +256,7 @@
       });
     }
 
-    // ── Filter by stock status ──
-    function filterBy(status) {
-      document.querySelectorAll('#productTableBody tr').forEach(row => {
-        row.style.display = (!status || row.dataset.status === status) ? '' : 'none';
-      });
-    }
+
 
     // ── Fill edit modal with clicked product's data ──
     function editProduct(name, price, gst, stock) {
@@ -366,57 +266,8 @@
       document.getElementById('editStock').value = stock;
     }
 
-    // ── Delete a table row (with confirmation) ──
-    function deleteRow(btn) {
-      if (confirm('Delete this product?')) {
-        btn.closest('tr').remove();
-      }
-    }
 
-    // ── Save new product: adds a row to the table ──
-    function saveNewProduct() {
-      const name = document.getElementById('newName').value.trim();
-      const price = document.getElementById('newPrice').value;
-      const gst = document.getElementById('newGst').value;
-      const stock = document.getElementById('newStock').value || 0;
-      const cat = document.getElementById('newCategory').value;
 
-      if (!name || !price) { alert('Name and price are required.'); return; }
-
-      // Determine badge based on stock number
-      let badgeHtml;
-      if (stock == 0) badgeHtml = '<span class="badge-out">Out of Stock</span>';
-      else if (stock < 10) badgeHtml = '<span class="badge-low">Low Stock</span>';
-      else badgeHtml = '<span class="badge-in">In Stock</span>';
-
-      const tbody = document.getElementById('productTableBody');
-      const rowCount = tbody.rows.length + 1;
-
-      tbody.insertAdjacentHTML('beforeend', `
-      <tr data-status="${stock == 0 ? 'out-stock' : (stock < 10 ? 'low-stock' : 'in-stock')}">
-        <td>${rowCount}</td>
-        <td><strong>${name}</strong></td>
-        <td>${cat}</td>
-        <td>₹ ${parseFloat(price).toFixed(0)}</td>
-        <td>${gst}%</td>
-        <td>${stock}</td>
-        <td>${badgeHtml}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary py-0 me-1"
-                  onclick="editProduct('${name}',${price},${gst},${stock})"
-                  data-bs-toggle="modal" data-bs-target="#editProductModal">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-            <i class="bi bi-trash3"></i>
-          </button>
-        </td>
-      </tr>`);
-
-      // Close modal and reset form
-      bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
-      document.getElementById('addProductForm').reset();
-    }
   </script>
 </body>
 

@@ -5,7 +5,7 @@ from . import models
 
 
 class Business(admin.ModelAdmin):
-    list_display = ("user","bizType","phone_number","Gstin","City","full_address","Pan_number","shop_logo","Gst_enable","default_gst")
+    list_display = ("user","bizType","phone_number","Gstin","City","full_address","Pan_number","Gst_enable","default_gst")
 admin.site.register(models.Business, Business)
 
 class Formet(admin.ModelAdmin):
