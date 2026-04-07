@@ -59,3 +59,5 @@ class Sells(models.Model):
     Inv_number = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     Product_name = models.CharField()
     Product_qty = models.IntegerField()
+    Product_price = models.IntegerField()
+    Product_gst = models.IntegerField()

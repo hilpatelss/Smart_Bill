@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate ,login ,logout
+from django.http import JsonResponse
 from django.contrib import messages
 from myweb.models import *
 
@@ -19,6 +20,16 @@ def about(request):
 def billing(request):
     context = {"page":"home"}
     return render(request,'billing.html',context)
+
+@csrf_protect
+@login_required(login_url="/signin/")   
+def getcustomer(request):
+    if request.method == "POST":
+        Customer_mobile = request.POST.get("Customer_mobile")
+        print(Customer_mobile)
+        if Customer_mobile == '9265186613' :   
+            success = "Hilu patel"
+        return HttpResponse(success)
 
 @login_required(login_url="/signin/")
 def dashboard(request):
