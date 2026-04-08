@@ -56,25 +56,25 @@
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="panel mb-0 p-3 text-center">
-          <div class="fw-700 fs-4 fw-bold">124</div>
+          <div class="fw-700 fs-4 fw-bold">{{ Stats.prod_count }}</div>
           <div class="small text-muted">Total Products</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="panel mb-0 p-3 text-center">
-          <div class="fw-700 fs-4 fw-bold text-success">108</div>
+          <div class="fw-700 fs-4 fw-bold text-success">{{ Stats.Prod_inStock }}</div>
           <div class="small text-muted">In Stock</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="panel mb-0 p-3 text-center">
-          <div class="fw-700 fs-4 fw-bold text-warning">13</div>
+          <div class="fw-700 fs-4 fw-bold text-warning">{{ Stats.prod_lowStock }}</div>
           <div class="small text-muted">Low Stock</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="panel mb-0 p-3 text-center">
-          <div class="fw-700 fs-4 fw-bold text-danger">3</div>
+          <div class="fw-700 fs-4 fw-bold text-danger">{{ Stats.Prod_outStock }}</div>
           <div class="small text-muted">Out of Stock</div>
         </div>
       </div>
@@ -110,6 +110,7 @@
               <th>Unit Price</th>
               <th>GST %</th>
               <th>Stock</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -118,30 +119,55 @@
             Each row has a data-status attribute used by filterBy().
             In production these rows are rendered by Django template tags.
           -->
-            <tr data-status="in-stock">
-              <td>1</td>
-              <td><strong>Rice (5kg)</strong></td>
-              <td>₹ 320</td>
-              <td>5%</td>
-              <td>240</td>
-              <td>
+            {% for p in prod %}
+            <tr data-status="{{ p.Product_status }}">
+              <td>{{ forloop.counter }}</td>
+              <td><strong>{{ p.Product_name }}</strong></td>
+              <td>₹ {{ p.Product_price }}</td>
+              <td>{{ p.Product_gst }}%</td>
+              <td>{{ p.Product_stock }}</td>
+              <td><span class="{{ p.Product_design }}">{{ p.Product_status|title }}</span></td>
+              <td class="d-flex justify-content-start">
                 <button class="btn btn-sm btn-outline-primary py-0 me-1"
-                  onclick="editProduct('Rice (5kg)', 320, 5, 240)" data-bs-toggle="modal"
-                  data-bs-target="#editProductModal">
+                  onclick="editProduct('{{ p.id }}','{{ p.Product_name }}', '{{ p.Product_price }}', '{{ p.Product_gst }}', '{{ p.Product_stock }}')"
+                  data-bs-toggle="modal" data-bs-target="#editProductModal">
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteRow(this)">
-                  <i class="bi bi-trash3"></i>
-                </button>
+                <form action="deleteproducts">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger py-0" data-bs-toggle="modal"
+                    id="deleteproducts_Products_id" value="{{p.id}}">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </form>
               </td>
             </tr>
-
+            {% endfor %}
           </tbody>
         </table>
       </div>
     </div><!-- /panel -->
 
   </main>
+  <script type="text/javascript">
+    // deleteing products
+    $(document).on("submit", "#deleteproducts", function (e) {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '/deleteproducts/',
+        data: {
+          Products_id: $('#deleteproducts_Products_id').val(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+          location.reload(true);
+
+          // Handle success response
+        }
+      })
+    })
+  </script>
 
 
   <!-- ════════════════════════════════
@@ -175,7 +201,7 @@
                   <option value="0">0%</option>
                   <option value="5">5%</option>
                   <option value="12">12%</option>
-                  <option value="18" >18%</option>
+                  <option value="18">18%</option>
                   <option value="28">28%</option>
                 </select>
               </div>
@@ -203,11 +229,15 @@
     <div class="modal fade" id="editProductModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
           <div class="modal-header">
             <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2 text-warning"></i>Edit Product</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
+            <div class="mb-3 hidden">
+              <input type="hidden" name="id" class="form-control" id="editid" />
+            </div>
             <div class="mb-3">
               <label class="form-label">Product Name</label>
               <input type="text" name="Name" class="form-control" id="editName" />
@@ -219,12 +249,12 @@
               </div>
               <div class="col-6">
                 <label class="form-label">GST %</label>
-                <select name="gst"  class="form-select" id="editGst">
-                  <option value="0">0%</option>
-                  <option value="5">5%</option>
-                  <option value="12">12%</option>
-                  <option value="18" selected>18%</option>
-                  <option value="28">28%</option>
+                <select name="gst" class="form-select" id="editGst">
+                  <option value=0 selected>0%</option>
+                  <option value=5>5%</option>
+                  <option value=12>12%</option>
+                  <option value=18>18%</option>
+                  <option value=28>28%</option>
                 </select>
 
               </div>
@@ -255,11 +285,16 @@
         row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
       });
     }
-
+    function filterBy(status) {
+      document.querySelectorAll('#productTableBody tr').forEach(row => {
+        row.style.display = (!status || row.dataset.status === status) ? '' : 'none';
+      });
+    }
 
 
     // ── Fill edit modal with clicked product's data ──
-    function editProduct(name, price, gst, stock) {
+    function editProduct(id, name, price, gst, stock) {
+      document.getElementById('editid').value = id;
       document.getElementById('editName').value = name;
       document.getElementById('editPrice').value = price;
       document.getElementById('editGst').value = gst;

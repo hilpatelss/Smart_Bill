@@ -25,19 +25,19 @@ class Formet(models.Model):
 class Customer(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     Customer_name = models.CharField(max_length=255)
-    Customer_mobile = models.IntegerField(default=9265186613)
+    Customer_mobile = models.IntegerField()
     Customer_email = models.EmailField(default="customer@smartbill.com")
     customer_bill_count = models.IntegerField(default=0)
     customer_bill_spent = models.IntegerField(default=0)
     def __str__(self):
-        return self.Customer_mobile
+        return self.Customer_name
     
 class Products(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     Product_name = models.CharField()
-    Product_price = models.IntegerField()
-    Product_stock = models.IntegerField()
-    Product_gst = models.IntegerField()
+    Product_price = models.IntegerField(default=0)
+    Product_stock = models.IntegerField(default=0)
+    Product_gst = models.IntegerField(default=0)
 
 class Invoice(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -60,4 +60,4 @@ class Sells(models.Model):
     Product_name = models.CharField()
     Product_qty = models.IntegerField()
     Product_price = models.IntegerField()
-    Product_gst = models.IntegerField()
+    Product_gst = models.IntegerField(default=0)

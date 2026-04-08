@@ -85,32 +85,38 @@
                   <div class="col-12">
                     <label class="form-label">Shop / Business Name *</label>
                     <input type="text" class="form-control" name="bizName" id="editbiz_bizName"
-                      value="BillMate Store" />
+                      value="{{biz.bizName}}" />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Owner Name</label>
-                    <input type="text" class="form-control" id="editbiz_full_name" name="full_name" value="hil Patel" />
+                    <input type="text" class="form-control" style="text-transform: capitalize;" id="editbiz_full_name"
+                      name="full_name" value="{{user.first_name}} {{user.last_name}}">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Phone Number</label>
                     <input type="tel" class="form-control" id="editbiz_phone_number" name="phone_number"
-                      value="+91 92651 86613" />
+                      value="{{biz.phone_number}}" />
                   </div>
 
                   <div class="col-12">
                     <label class="form-label">Full Address</label>
+                    {% if biz.full_address != "" %}
                     <textarea class="form-control" id="editbiz_full_address" name="full_address"
-                      rows="2">25, Sector 26, Gnadhinagar – 382028</textarea>
+                      rows="2">{{biz.full_address}}</textarea>
+                    {% else %}
+                    <textarea class="form-control" id="editbiz_full_address" name="full_address"
+                      rows="2">Enter Your Address</textarea>
+                    {% endif %}
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">GSTIN</label>
-                    <input type="text" class="form-control" id="editbiz_Gstin" name="Gstin" value="27AABCU9603R1ZM"
+                    <input type="text" class="form-control" id="editbiz_Gstin" name="Gstin" value="{{biz.Gstin}}"
                       placeholder="GST Identification Number" />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">PAN Number</label>
-                    <input type="text" class="form-control" id="editbiz_Pan_number" name="Pan_number"
-                      placeholder="optional" />
+                    <input type="text" class="form-control" value="{{biz.Pan_number}}" id="editbiz_Pan_number"
+                      name="Pan_number" placeholder="optional" />
                   </div>
                 </div>
               </div>
@@ -131,11 +137,11 @@
                 phone_number: $('#editbiz_phone_number').val(),
                 full_address: $('#editbiz_full_address').val(),
                 Gstin: $('#editbiz_Gstin').val(),
-                 
+
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
               },
               success: function (data) {
-                
+                location.reload(true);
                 // Handle success response
               }
             })
@@ -153,34 +159,33 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Invoice Number Prefix</label>
-                    <input type="text" class="form-control" id="invPrefix" name="Inv_prefix" value="INV-"
-                      oninput="updatePreview()" />
+                    <input type="text" class="form-control" id="invPrefix" name="Inv_prefix"
+                      value="{{format.Inv_prefix}}" oninput="updatePreview()" />
                   </div>
 
                   <div class="col-12">
                     <label class="form-label">Invoice Footer Text</label>
                     <textarea class="form-control" rows="2" id="invFooter" name="Inv_footer"
-                      oninput="updatePreview()">Thank you for your purchase! For queries, contact us at shop@billmate.in</textarea>
+                      oninput="updatePreview()">{{format.Inv_footer}}</textarea>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Invoice Due Days</label>
                     <select class="form-select" id="Inv_due_days" name="Inv_due_days">
-                      <option>On Receipt</option>
-                      <option>7 days</option>
-                      <option selected>15 days</option>
-                      <option>30 days</option>
+                      <option value="0" {% if format.Inv_due_days == 0 %}selected{% endif %}>On Receipt</option>
+                      <option value="7" {% if format.Inv_due_days == 7 %}selected{% endif %}>7 days</option>
+                      <option value="15" {% if format.Inv_due_days == 15 %}selected{% endif %}>15 days</option>
+                      <option value="30" {% if format.Inv_due_days == 30 %}selected{% endif %}>30 days</option>
                     </select>
                   </div>
                   <div class="col-md-6">
                     <div class="mt-4">
                       <div class="form-check form-switch">
                         <input class="form-check-input" id="Show_signature_area" name="Show_signature_area"
-                          type="checkbox" id="showSignature" checked />
+                          type="checkbox" id="showSignature" {% if format.Show_signature_area %}checked{% endif %} />
                         <label class="form-check-label small" for="showSignature">Show signature area</label>
                       </div>
                       <div class="form-check form-switch mt-2">
-                        <input class="form-check-input" id="Show_TC" name="Show_TC" type="checkbox" id="showTerms"
-                          checked />
+                        <input class="form-check-input" id="Show_TC" name="Show_TC" type="checkbox" id="showTerms" {% if format.Show_TC %}checked{% endif %} />
                         <label class="form-check-label small" for="showTerms">Show terms &amp; conditions</label>
                       </div>
                     </div>
@@ -209,6 +214,7 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
               },
               success: function (data) {
+                location.reload(true);
                 // Handle success response
               }
             })
@@ -226,12 +232,13 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Username</label>
-                    <input type="text" class="form-control" id="edituser_username" name="username" value="admin" />
+                    <input type="text" class="form-control" id="edituser_username" name="username"
+                      value="{{ user.username }}" />
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Display Name</label>
-                    <input type="text" class="form-control" id="edituser_full_name" name="full_name"
-                      value="Hil Patel" />
+                    <input type="text" class="form-control" style="text-transform: capitalize;" id="edituser_full_name"
+                      name="full_name" value="{{ user.first_name }} {{ user.last_name }}" />
                   </div>
                   <div class="col-12">
                     <hr />
@@ -274,6 +281,7 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
               },
               success: function (data) {
+                location.reload(true);
                 // Handle success response
               }
             })
