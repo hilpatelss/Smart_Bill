@@ -158,7 +158,7 @@
             {% for i in data.inv %}
             <tr data-status="{{ i.Inv_status }}" data-date="{{ i.Inv_bill_date|date:'Y-m-d' }}"
               data-customer="{{ i.Customer_name }}">
-              <td><strong>{{ data.Formet.Inv_prefix }}{{ i.Inv_number }}</strong></td>
+              <td><strong>{{ data.Formet.Inv_prefix }}{{ i.Inv_number|stringformat:"03d"}}</strong></td>
               <td>{{ i.Customer_name }}</td>
               <td>{{ i.Inv_items }}</td>
               <td>₹ {{ i.Inv_subtotal|floatformat:2 }}</td>

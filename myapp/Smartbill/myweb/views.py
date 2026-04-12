@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import json
 from time import strftime
 from django.contrib.auth.models import User
 from datetime import date, timedelta
@@ -9,16 +8,19 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate ,login ,logout
-from django.http import JsonResponse
 from django.contrib import messages
 from myweb.models import *
 from django.db.models import Sum
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect('/dashboard/')
     context = {"page":"home"}
     return render(request,'index.html',context)
 
 def about(request):
+    if request.user.is_authenticated:
+        return redirect('/dashboard/')
     context = {"page":"home"}
     return render(request,'about.html',context)
 
@@ -53,13 +55,14 @@ def billing(request):
         Inv_Total = float(request.POST.get("Inv_Total", 0))
         Inv_additional_charges = float(request.POST.get("Inv_additional_charges", 0))
         Inv_discount = float(request.POST.get("Inv_discount", 0))
-
         if not Customer.objects.filter(user=request.user).filter(Customer_mobile = Customer_mobile).exists():
             # Create new customer
             customer = Customer.objects.create(
             user=request.user,
             Customer_name=Customer_name,
-            Customer_mobile=Customer_mobile
+            Customer_mobile=Customer_mobile,
+            customer_bill_count=1,
+            customer_bill_spent=Inv_Total
             )
             customer.save()
         else:
@@ -67,6 +70,12 @@ def billing(request):
             customer = Customer.objects.filter(user=request.user).filter(Customer_mobile = Customer_mobile).first()
             if customer.Customer_name != Customer_name:
                 customer.Customer_name = Customer_name
+                customer.customer_bill_count += 1
+                customer.customer_bill_spent += Inv_Total
+                customer.save()
+            else:
+                customer.customer_bill_count += 1
+                customer.customer_bill_spent += Inv_Total
                 customer.save()
         invoice = Invoice.objects.create(
             user = request.user,
@@ -82,8 +91,7 @@ def billing(request):
             Inv_payment_mode = Inv_payment_mode,
             Customer_number = Customer_mobile
         )
-        invoice.save()  
-        print(Product_name,Product_price,Product_gst,Product_qty)
+        invoice.save()        
         if len(Product_name) > 0:
             for i in range(len(Product_name)):
                 if i < len(Product_price) and i < len(Product_gst) and i < len(Product_qty):
@@ -102,8 +110,6 @@ def billing(request):
                         products.save()
         inv_id = Invoice.objects.filter(user = request.user).filter(Inv_number = inv_number).first().id
         return redirect('invoice', inv_id= inv_id)
-
-
     context = {"page":"home", "data": data}
     return render(request,'billing.html',context)
 
@@ -111,16 +117,13 @@ def billing(request):
 @login_required(login_url="/signin/")   
 def getcustomer(request):
     if request.method == "POST":
-        Customer_mobile = request.POST.get("Customer_mobile")
-        print(Customer_mobile)
+        Customer_mobile = request.POST.get("Customer_mobile")     
         customer_name = Customer.objects.filter(user=request.user).filter(Customer_mobile = Customer_mobile).first().Customer_name
         if customer_name:   
             success = customer_name.title() 
         else:
             success = "Customer not found"
         return HttpResponse(success)
-
-
 
 @login_required(login_url="/signin/")
 def dashboard(request):
@@ -147,9 +150,6 @@ def dashboard(request):
         inv.Inv_items = Sells.objects.filter(user=request.user).filter(Inv_number = inv).count()
         inv.Inv_status = "Paid" if inv.Inv_due_bill_date <= date.today() else "Pending" 
         inv.format = Formet.objects.filter(user = request.user).first().Inv_prefix  
-
-    print(week)
-
     data = {
         "initials": initials,
         "today_sales": today_sales,
@@ -157,8 +157,7 @@ def dashboard(request):
         "total_customers": total_customers,
         "total_products": total_products,   
         "week": week,
-        "recent_invoices": recent_invoices
-      
+        "recent_invoices": recent_invoices      
     }
     context = {"page":"home", "data": data}
     return render(request,'dashboard.html',context)
@@ -176,18 +175,15 @@ def customers(request):
     Inv = Invoice.objects.filter(user = request.user)
     for i in Inv:
         T_revenue += i.Inv_Total
-
     for c in Cust:
         c.Customer_name = c.Customer_name.title()
         c.initials = c.Customer_name[0].upper() + c.Customer_name.split(" ")[-1][0].upper()
-
     Stats = {
         "cust_total": cust_total,
         "T_revenue": T_revenue,
         "cust_bills": Inv.count(),
         "cust_new_this_week": cust_new_this_week
     }
-
     context = {"page":"customers", "cust" : Cust , "Stats":Stats }
     return render(request,'customers.html',context)
 
@@ -203,8 +199,7 @@ def editcustomer(request):
         cust.Customer_name = Customer_name
         cust.Customer_mobile = Customer_mobile  
         cust.Customer_email = Customer_email
-        cust.save()
-        print(Customer_name,Customer_mobile,Customer_email)
+        cust.save()    
         return redirect('/customers/')
         
 @csrf_protect
@@ -222,7 +217,6 @@ def addcustomer(request):
             Customer_email=Customer_email
         )
         cust.save()
-        print(Customer_name,Customer_mobile,Customer_email)
         return redirect('/customers/')
     
 @login_required(login_url="/signin/")   
@@ -241,8 +235,7 @@ def deletecustomer(request):
 @login_required(login_url="/signin/")
 def invoice(request, inv_id):
     user = request.user
-    inv = Invoice.objects.filter(user = request.user).filter(id = inv_id).first()
-    print(inv.Inv_number)
+    inv = Invoice.objects.filter(user = request.user).filter(id = inv_id).first()  
     formet = Formet.objects.filter(user = user).first()
     business = Business.objects.filter(user = user).first()
     customer = Customer.objects.filter(user=user).filter(Customer_mobile = inv.Customer_number).first()
@@ -320,7 +313,6 @@ def editproducts(request):
         prod.Product_gst = gst
         prod.Product_stock = Stock
         prod.save()
-        print(id,Name,Price,gst,Stock)
         return redirect('/products/')
     
 @csrf_protect
@@ -339,7 +331,6 @@ def addproducts(request):
             Product_gst =gst
         )
         prod.save()
-        print(Name,Price,gst,Stock)
         return redirect('/products/')
     
 @login_required(login_url="/signin/")   
@@ -350,7 +341,6 @@ def deleteproducts(request):
         prod = Products.objects.filter(user=User).filter(id = Products_id).first()
         if prod:
             prod.delete()
-        print(Customer_mobile)
         return redirect('/customers/')
     return redirect('/products/')
 
@@ -399,8 +389,7 @@ def reports(request):
     month_summary = []
     for i in range(11, -1, -1):
         month_date = date.today() - timedelta(days=30*i)
-        month_name = month_date.strftime("%b %Y")
-        
+        month_name = month_date.strftime("%b %Y")        
         invoice_count = Inv.filter(Inv_bill_date__year=month_date.year, Inv_bill_date__month=month_date.month).count()
         gross_sales = Inv.filter(Inv_bill_date__year=month_date.year, Inv_bill_date__month=month_date.month).aggregate(total=Sum('Inv_Total'))['total'] or 0
         gst_collected= Inv.filter(Inv_bill_date__year=month_date.year, Inv_bill_date__month=month_date.month).aggregate(total=Sum('Inv_gst'))['total'] or 0
@@ -415,9 +404,7 @@ def reports(request):
             "discounts":discounts,
             "net_revenue":net_revenue,
             "Growth":Growth
-
-        })
-    print(month_summary)    
+        }) 
     data= {
         "total_revenue": total_revenue,
         "total_invoices":total_invoices,
@@ -443,7 +430,7 @@ def sales_history(request):
             total_coll += i.Inv_Total
             
     total_T_rev = inv.filter(Inv_due_bill_date__gte = date.today()).aggregate(total=Sum('Inv_Total'))['total'] or 0
-    invoice = inv.order_by('Inv_number')
+    invoice = inv.order_by('-Inv_number')
     formet = Formet.objects.filter(user = user).first()
     for i in invoice: 
         i.Inv_items = Sells.objects.filter(user=user).filter(Inv_number = i).count()   
@@ -460,6 +447,8 @@ def sales_history(request):
     context = {"page":"home","data": data}
     return render(request,'sales_history.html',context)
 
+@csrf_protect
+@login_required(login_url="/signin/")
 def invoice_h(request):
     if request.method == "POST":
         inv_number = request.POST.get("inv_number")
@@ -479,6 +468,7 @@ def settings(request):
 @csrf_protect
 @login_required(login_url="/signin/")
 def editbiz(request):
+    # ediit business details
     if request.method == "POST":
         bizName = request.POST.get("bizName")
         full_name = request.POST.get("full_name")
@@ -492,14 +482,14 @@ def editbiz(request):
         business.full_address = full_address
         business.phone_number = phone_number
         business.Gstin = Gstin
-        business.Pan_number = Pan_number
+        business.Pan_number = Pan_number if Pan_number else "N/A"
         business.save()
-        print(bizName,full_name,phone_number,full_address,Gstin,Pan_number)
     return redirect('/settings/#tab-shop')
 
 @csrf_protect
 @login_required(login_url="/signin/")
 def editinv(request):
+    # edit invoice format and settings
     if request.method == "POST":
         Inv_prefix = request.POST.get("Inv_prefix")
         Inv_footer = request.POST.get("Inv_footer")
@@ -513,14 +503,13 @@ def editinv(request):
         format.Inv_due_days = Inv_due_days
         format.Show_signature_area = True if Show_signature_area == "true" else False
         format.Show_TC = True if Show_TC == "true" else False
-        format.save()
-        print(Inv_prefix,Inv_footer,Inv_due_days,Show_signature_area,Show_TC)
+        format.save()       
         return redirect(reverse('settings') + '#tab-invoice')
 
 @csrf_protect
 @login_required(login_url="/signin/")   
 def edituser(request):
-    
+    # edit user account details and password 
     if request.method == "POST":
         username = request.POST.get("username")
         full_name = request.POST.get("full_name")
@@ -550,14 +539,10 @@ def signin(request):
     if request.method =="POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-         
-        print(username,password)
         if not User.objects.filter(username = username).exists():
             messages.info(request, 'invalid Username')
-            return redirect('/signin/')
-        
-        user = authenticate(username =username,password =password)
-        
+            return redirect('/signin/')        
+        user = authenticate(username =username,password =password)       
         if user is None:
             messages.info(request, 'invalid password')
             return redirect('/signin/')

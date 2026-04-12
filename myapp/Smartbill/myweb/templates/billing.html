@@ -61,7 +61,7 @@
           <!-- Shows the auto-generated invoice number -->
           <span class="badge bg-light text-dark border fs-6" id="invoice-num">
             {{data.inv_format}}
-            {{ data.inv_number}}
+            {{ data.inv_number|stringformat:"03d" }}
           </span>
         </div>
       </div>

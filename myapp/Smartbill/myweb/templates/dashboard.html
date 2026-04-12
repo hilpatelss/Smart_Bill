@@ -284,7 +284,7 @@
             <!-- ── Each row = one transaction ── -->
             {% for inv in data.recent_invoices %}
             <tr>
-              <td><strong>#{{ inv.format }}{{ inv.Inv_number }}</strong></td>
+              <td><strong>#{{ inv.format }}{{ inv.Inv_number|stringformat:"03d" }}</strong></td>
               <td>{{ inv.Customer_name }}</td>
               <td>{{ inv.Inv_items }}</td>
               <td><strong>₹ {{ inv.Inv_Total|floatformat:2 }}</strong></td>

@@ -315,58 +315,8 @@
       linkEl.classList.add('active');
       return false; // prevent # scroll
     }
-    // ── Password strength checker ──
-    function checkStrength() {
-      const pw = document.getElementById('password').value;
-      const fill = document.getElementById('strength-fill');
-      const text = document.getElementById('strength-text');
-
-      let score = 0;
-      if (pw.length >= 8) score++;
-      if (/[A-Z]/.test(pw)) score++;
-      if (/[0-9]/.test(pw)) score++;
-      if (/[^A-Za-z0-9]/.test(pw)) score++;
-
-      const levels = [
-        { label: 'Very weak', color: '#ef4444', w: '20%' },
-        { label: 'Weak', color: '#f97316', w: '40%' },
-        { label: 'Fair', color: '#eab308', w: '60%' },
-        { label: 'Strong', color: '#22c55e', w: '80%' },
-        { label: 'Very strong', color: '#16a34a', w: '100%' },
-      ];
-
-      if (pw.length === 0) {
-        fill.style.width = '0'; text.textContent = 'Enter a password'; text.style.color = '#94a3b8';
-        return;
-      }
-      const lvl = levels[score] || levels[0];
-      fill.style.width = lvl.w;
-      fill.style.background = lvl.color;
-      text.textContent = lvl.label;
-      text.style.color = lvl.color;
-    }
-
-
-    // When user picks an image file, show a thumbnail.
-    function previewLogo(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        // Find the logo placeholder and replace with the image
-        const preview = document.querySelector('.logo-preview');
-        preview.innerHTML = `<img src="${e.target.result}" class="logo-preview" alt="Logo" />`;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function saveSettings() {
-      // In production: POST form data to Django view.
-      // For demo: just show a confirmation toast.
-      const toast = document.getElementById('saveToast');
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
+    
+  
   </script>
 </body>
 
